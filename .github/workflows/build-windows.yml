@@ -45,13 +45,56 @@ jobs:
         run: |
           choco install innosetup --no-progress -y
 
-      - name: Construire l'installateur
+            - name: Construire l'installateur
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path "build\installer" | Out-Null
-          & "C:\Program Files (x86)\Inno Setup 7\ISCC.exe" `
+
+          Write-Host "Recherche de Inno Setup..."
+
+          $possiblePaths = @(
+            "${env:ProgramFiles(x86)}\Inno Setup 7\ISCC.exe",
+            "${env:ProgramFiles}\Inno Setup 7\ISCC.exe",
+            "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe",
+            "${env:ProgramFiles}\Inno Setup 6\ISCC.exe"
+          )
+
+          $iscc = $possiblePaths | Where-Object {
+            $_ -and (Test-Path $_)
+          } | Select-Object -First 1
+
+          if (-not $iscc) {
+            Write-Host "ISCC.exe non trouvé dans les emplacements standards."
+            Write-Host "Recherche complémentaire..."
+
+            $found = Get-ChildItem `
+              -Path "C:\Program Files", "C:\Program Files (x86)" `
+              -Filter "ISCC.exe" `
+              -Recurse `
+              -ErrorAction SilentlyContinue |
+              Select-Object -First 1
+
+            if ($found) {
+              $iscc = $found.FullName
+            }
+          }
+
+          if (-not $iscc) {
+            Write-Error "Impossible de trouver ISCC.exe."
+            exit 1
+          }
+
+          Write-Host "Inno Setup trouvé : $iscc"
+          Write-Host "Création de l'installateur..."
+
+          & $iscc `
             "/Obuild\installer" `
             "installer.iss"
+
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "Inno Setup a échoué avec le code $LASTEXITCODE."
+            exit $LASTEXITCODE
+          }
 
       - name: Vérifier l'installateur
         shell: pwsh
