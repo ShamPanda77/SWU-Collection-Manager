@@ -6569,8 +6569,11 @@ CARDMARKET_PRICE_CACHE_SECONDS = 6 * 60 * 60
 # Organisation des données utilisateur :
 # - comptes utilisateurs : registre des comptes + une collection JSON par compte
 # - sauvegardes : copies de sécurité de la base et des collections
-ACCOUNTS_DIR = SCRIPT_DIR / "comptes utilisateurs"
-BACKUPS_DIR = SCRIPT_DIR / "sauvegardes"
+# Toutes les données modifiables par l'utilisateur doivent rester hors de
+# Program Files lorsque l'application est installée.
+# DATA_DIR vaut %LOCALAPPDATA%\SWU Collection Manager en mode EXE installé.
+ACCOUNTS_DIR = DATA_DIR / "comptes utilisateurs"
+BACKUPS_DIR = DATA_DIR / "sauvegardes"
 BACKUP_DB_DIR = BACKUPS_DIR / "bases de données"
 BACKUP_COLLECTIONS_DIR = BACKUPS_DIR / "collections"
 
