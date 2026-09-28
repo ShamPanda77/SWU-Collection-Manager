@@ -45,7 +45,7 @@ jobs:
         run: |
           choco install innosetup --no-progress -y
 
-            - name: Construire l'installateur
+      - name: Construire l'installateur
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path "build\installer" | Out-Null
@@ -59,9 +59,9 @@ jobs:
             "${env:ProgramFiles}\Inno Setup 6\ISCC.exe"
           )
 
-          $iscc = $possiblePaths | Where-Object {
-            $_ -and (Test-Path $_)
-          } | Select-Object -First 1
+          $iscc = $possiblePaths |
+            Where-Object { $_ -and (Test-Path $_) } |
+            Select-Object -First 1
 
           if (-not $iscc) {
             Write-Host "ISCC.exe non trouvé dans les emplacements standards."
@@ -99,12 +99,28 @@ jobs:
       - name: Vérifier l'installateur
         shell: pwsh
         run: |
-          Write-Host "Contenu de build\installer :"
-          Get-ChildItem -Path "build\installer" -Recurse
+          Write-Host "Recherche du Setup.exe..."
+
+          $setup = Get-ChildItem `
+            -Path "build\installer" `
+            -Filter "*.exe" `
+            -Recurse `
+            -ErrorAction SilentlyContinue |
+            Select-Object -First 1
+
+          if (-not $setup) {
+            Write-Error "Aucun installateur .exe n'a été trouvé."
+            Write-Host "Contenu de build\installer :"
+            Get-ChildItem -Path "build\installer" -Recurse
+            exit 1
+          }
+
+          Write-Host "Installateur trouvé :"
+          Write-Host $setup.FullName
 
       - name: Publier l'installateur comme artefact
         uses: actions/upload-artifact@v4
         with:
           name: SWU-Collection-Manager-Setup
-          path: build/installer/SWU_Collection_Manager_Setup.exe
+          path: build/installer/*.exe
           if-no-files-found: error
