@@ -25,7 +25,7 @@ hiddenimports = [
 
 # L'application est une interface Tkinter sans console.
 a = Analysis(
-    [str(ROOT / "SWU_Collection_Manager_V494.py")],
+    [str(ROOT / "SWU_Collection_Manager_V495.py")],
     pathex=[str(ROOT)],
     binaries=[],
     datas=datas,
