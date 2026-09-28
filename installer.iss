@@ -37,7 +37,7 @@ Source: "release_data\SWU_Collection_Manager.sqlite"; DestDir: "{localappdata}\S
 
 ; Les icônes d'affinité sont initialisées dans les données utilisateur mais
 ; ne sont jamais remplacées lors d'une mise à jour.
-Source: "release_data\affinity_icons\*"; DestDir: "{localappdata}\SWU Collection Manager\aspect_icons"; Flags: ignoreversion onlyifdoesntexist recursesubdirs createallsubdirs
+Source: "release_data\aspect_icons\*"; DestDir: "{localappdata}\SWU Collection Manager\aspect_icons"; Flags: ignoreversion onlyifdoesntexist recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{autoprograms}\SWU Collection Manager"; Filename: "{app}\{#MyAppExeName}"
