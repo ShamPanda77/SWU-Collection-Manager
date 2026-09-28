@@ -1,0 +1,5 @@
+requests
+Pillow
+reportlab
+openpyxl
+pyinstaller==6.22.3
